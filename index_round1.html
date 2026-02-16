@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>UGCET Round 1 - ANTICLOCK</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Arial,sans-serif;padding:20px;background:#f5f5f5}
+.header{background:#1e40af;color:white;padding:20px;text-align:center;border-radius:10px;margin-bottom:20px}
+.card{background:white;padding:20px;border-radius:10px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+input,select{width:100%;padding:10px;margin:10px 0;border:2px solid #ddd;border-radius:5px}
+button{background:#1e40af;color:white;padding:15px;border:none;border-radius:5px;cursor:pointer;width:100%;font-size:16px;font-weight:bold}
+table{width:100%;border-collapse:collapse}
+th,td{padding:10px;text-align:left;border-bottom:1px solid #ddd}
+th{background:#f0f0f0;font-weight:bold}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="header">
+<h1>🎓 UGCET 2025 Round 1</h1>
+<p>ANTICLOCK COACHING ACADEMY - 6362324224</p>
+</div>
+
+<div class="card">
+<h2>Search Colleges</h2>
+<input type="number" id="rank" placeholder="Your Rank">
+<select id="category">
+<option value="">Select Category</option>
+<option value="GM">GM</option>
+<option value="1G">1G</option>
+<option value="2AG">2AG</option>
+<option value="2BG">2BG</option>
+<option value="3AG">3AG</option>
+<option value="3BG">3BG</option>
+<option value="SCG">SCG</option>
+<option value="STG">STG</option>
+</select>
+<button onclick="search()">Search</button>
+</div>
+
+<div id="results" class="card hidden">
+<h2>Results: <span id="count"></span></h2>
+<table>
+<thead><tr><th>Code</th><th>College</th><th>Branch</th><th>Cutoff</th></tr></thead>
+<tbody id="tbody"></tbody>
+</table>
+<button onclick="download()">Download Excel</button>
+</div>
+
+<script>
+let colleges={},data=[],results=[];
+
+fetch('data_round1.json').then(r=>r.json()).then(d=>{colleges=d.c;data=d.d;});
+
+function search(){
+const rank=parseInt(document.getElementById('rank').value);
+const cat=document.getElementById('category').value;
+if(!rank||!cat){alert('Enter rank and category');return;}
+
+const range=rank<10000?5000:rank<50000?8500:rank<100000?12500:rank<200000?25000:45000;
+const min=Math.max(0,rank-range),max=rank+range;
+
+results=data.filter(r=>r.t===cat&&r.r[0]>=min&&r.r[0]<=max).sort((a,b)=>a.r[0]-b.r[0]);
+
+document.getElementById('count').textContent=results.length;
+document.getElementById('results').classList.remove('hidden');
+document.getElementById('tbody').innerHTML=results.map(r=>{
+const c=colleges[Object.keys(colleges).find(k=>colleges[k].i===r.i)];
+const code=Object.keys(colleges).find(k=>colleges[k].i===r.i);
+return`<tr><td>${code}</td><td>${c.n}</td><td>${r.b}</td><td>${r.r[0]}</td></tr>`;
+}).join('');
+}
+
+function download(){
+let csv='ANTICLOCK COACHING ACADEMY\n6362324224\n\nUGCET Round 1 Results\n\nCode,College,Branch,Cutoff\n';
+results.forEach(r=>{
+const c=colleges[Object.keys(colleges).find(k=>colleges[k].i===r.i)];
+const code=Object.keys(colleges).find(k=>colleges[k].i===r.i);
+csv+=`${code},"${c.n}",${r.b},${r.r[0]}\n`;
+});
+const blob=new Blob([csv],{type:'text/csv'});
+const a=document.createElement('a');
+a.href=URL.createObjectURL(blob);
+a.download='ANTICLOCK_Round1.csv';
+a.click();
+}
+</script>
+</body>
+</html>

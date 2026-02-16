@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UGCET 2025 - Counselling System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        :root { --primary: #1e40af; --accent: #3b82f6; --success: #10b981; --danger: #ef4444; --bg: #f8fafc; --surface: #ffffff; --text: #0f172a; --text-muted: #64748b; --border: #e2e8f0; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+        .container { max-width: 100%; padding: 1rem; }
+        .header { background: linear-gradient(135deg, var(--primary), #1e3a8a); color: white; padding: 1.5rem; margin: -1rem -1rem 1rem -1rem; text-align: center; }
+        .header h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem; }
+        .header p { font-size: 0.875rem; opacity: 0.9; }
+        .card { background: var(--surface); border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .card h2 { font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; }
+        .login-screen { max-width: 400px; margin: 2rem auto; }
+        .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1.5rem; background: var(--bg); padding: 0.25rem; border-radius: 10px; }
+        .tab { padding: 0.75rem; border: none; background: transparent; color: var(--text-muted); font-size: 0.95rem; font-weight: 600; cursor: pointer; border-radius: 8px; font-family: 'Inter', sans-serif; }
+        .tab.active { background: var(--primary); color: white; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; }
+        .form-group input, .form-group select { width: 100%; padding: 0.875rem; border: 2px solid var(--border); background: var(--surface); border-radius: 10px; font-size: 1rem; font-family: 'Inter', sans-serif; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--accent); }
+        .btn { width: 100%; padding: 1rem; border: none; background: var(--primary); color: white; font-size: 1rem; font-weight: 700; border-radius: 10px; cursor: pointer; font-family: 'Inter', sans-serif; }
+        .btn:active { transform: scale(0.98); }
+        .btn-small { padding: 0.5rem 1rem; width: auto; font-size: 0.875rem; }
+        .btn-success { background: var(--success); }
+        .btn-secondary { background: var(--border); color: var(--text); }
+        .checkbox-group { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.5rem; margin-top: 0.5rem; max-height: 300px; overflow-y: auto; }
+        .checkbox-label { display: flex; align-items: center; gap: 0.5rem; padding: 0.625rem; background: var(--bg); border: 2px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.875rem; }
+        .checkbox-label input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
+        .checkbox-label input[type="checkbox"]:checked + span { color: var(--primary); font-weight: 600; }
+        .user-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding: 1rem; background: var(--surface); border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .user-name { font-weight: 700; font-size: 1rem; }
+        .user-email { font-size: 0.75rem; color: var(--text-muted); }
+        .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; }
+        .results-count { font-size: 1rem; font-weight: 600; color: var(--text-muted); }
+        .table-container { background: var(--surface); border-radius: 12px; overflow-x: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th { padding: 0.75rem 0.5rem; text-align: left; font-weight: 700; background: var(--bg); border-bottom: 2px solid var(--border); position: sticky; top: 0; font-size: 0.75rem; text-transform: uppercase; }
+        td { padding: 0.75rem 0.5rem; border-bottom: 1px solid var(--border); }
+        .college-code { font-weight: 700; color: var(--primary); }
+        .cutoff-rank { font-weight: 600; color: var(--success); }
+        .error { background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger); padding: 1rem; border-radius: 10px; margin-bottom: 1rem; }
+        .success { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); color: var(--success); padding: 1rem; border-radius: 10px; margin-bottom: 1rem; }
+        .info-box { background: rgba(59, 130, 246, 0.1); border: 1px solid var(--accent); color: var(--primary); padding: 1rem; border-radius: 10px; margin-bottom: 1rem; font-size: 0.9rem; }
+        .loading-indicator { position: fixed; top: 0; left: 0; right: 0; background: var(--primary); color: white; padding: 0.75rem; text-align: center; z-index: 1000; font-size: 0.9rem; font-weight: 600; }
+        .hidden { display: none; }
+        @media (min-width: 768px) {
+            .container { padding: 2rem; }
+            .header { margin: -2rem -2rem 2rem -2rem; padding: 2rem; }
+            .header h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="loadingIndicator" class="loading-indicator hidden">⏳ Loading...</div>
+    <div class="container">
+        <div id="loginScreen" class="login-screen">
+            <div class="card">
+                <h2>🎓 UGCET 2025</h2>
+                <p style="text-align: center; margin-bottom: 1.5rem; color: var(--text-muted);">Smart College Counselling</p>
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('login')">Login</button>
+                    <button class="tab" onclick="switchTab('signup')">Sign Up</button>
+                </div>
+                <div id="errorMessage" class="error hidden"></div>
+                <div id="successMessage" class="success hidden"></div>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="loginEmail" required placeholder="your.email@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="loginPassword" required placeholder="Password">
+                    </div>
+                    <button type="submit" class="btn">Login</button>
+                </form>
+                <form id="signupForm" class="hidden">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" id="signupName" required placeholder="Your name">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="signupEmail" required placeholder="your.email@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="signupPassword" required placeholder="Password">
+                    </div>
+                    <button type="submit" class="btn">Create Account</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="dashboard" class="hidden">
+            <div class="header">
+                <h1>🎓 UGCET 2025</h1>
+                <p>Smart Counselling with HK Support</p>
+            </div>
+            <div class="user-bar">
+                <div>
+                    <div class="user-name" id="userName"></div>
+                    <div class="user-email" id="userEmail"></div>
+                </div>
+                <button class="btn btn-small btn-secondary" onclick="logout()">Logout</button>
+            </div>
+            <div class="card">
+                <h2>📝 Preferences</h2>
+                <form id="preferencesForm">
+                    <div class="form-group">
+                        <label>Your Rank *</label>
+                        <input type="number" id="studentRank" required placeholder="Enter rank">
+                        <div id="rankInfo" class="info-box hidden" style="margin-top:0.5rem;"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Category *</label>
+                        <select id="category" required>
+                            <option value="">Select</option>
+                            <option value="GM">GM</option>
+                            <option value="1G">1G</option>
+                            <option value="2AG">2AG</option>
+                            <option value="2BG">2BG</option>
+                            <option value="3AG">3AG</option>
+                            <option value="3BG">3BG</option>
+                            <option value="SCG">SCG</option>
+                            <option value="STG">STG</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Reservations</label>
+                        <div class="checkbox-group" style="max-height:none;">
+                            <label class="checkbox-label"><input type="checkbox" name="reservation" value="K"><span>Kannada (K)</span></label>
+                            <label class="checkbox-label"><input type="checkbox" name="reservation" value="R"><span>Rural (R)</span></label>
+                            <label class="checkbox-label"><input type="checkbox" name="reservation" value="H"><span>Hyderabad Karnataka (H)</span></label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Districts</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" name="district" value="B"><span>Bangalore</span></label>
+                            <label class="checkbox-label"><input type="checkbox" name="district" value="M"><span>Mysore</span></label>
+                            <label class="checkbox-label"><input type="checkbox" name="district" value="N"><span>Mangalore</span></label>
+                            <label class="checkbox-label"><input type="checkbox" name="district" value="L"><span>Belgaum</span></label>
+                            <label class="checkbox-label"><input type="checkbox" name="district" value="H"><span>Hubli</span></label>
+                            <label class="checkbox-label"><input type="checkbox" name="district" value="D"><span>Dharwad</span></label>
+                            <label class="checkbox-label"><input type="checkbox" name="district" value="T"><span>Tumkur</span></label>
+                            <label class="checkbox-label"><input type="checkbox" name="district" value="U"><span>Udupi/Manipal</span></label>
+                            <label class="checkbox-label"><input type="checkbox" name="district" value="V"><span>Davangere</span></label>
+                            <label class="checkbox-label"><input type="checkbox" name="district" value="G"><span>Gulbarga</span></label>
+                            <label class="checkbox-label"><input type="checkbox" name="district" value="A"><span>Hassan</span></label>
+                            <label class="checkbox-label"><input type="checkbox" name="district" value="ALL"><span>All Districts</span></label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Branches (Each specialization separate)</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" name="branch" value="C1"><span>CS (Pure)</span></label>
+                            <label class="checkbox-label"><input type="checkbox" name="branch" value="C2"><span>CS-AI/ML</span></label>
+                            <label class="checkbox-label"><input type="checkbox" name="branch" value="C3"><span>CS-Data Sci</span></label>
+                            <label class="checkbox-label"><input type="checkbox" name="branch" value="C4"><span>CS-Cyber</span></label>
+                            <label class="checkbox-label"><input type="checkbox" name="branch" value="C5"><span>CS-IoT</span></label>
+                            <label class="checkbox-label"><input type="checkbox" name="branch" value="A1"><span>AI/ML</span></label>
+                            <label class="checkbox-label"><input type="checkbox" name="branch" value="D1"><span>Data Science</span></label>
+                            <label class="checkbox-label"><input type="checkbox" name="branch" value="I1"><span>Info Science</span></label>
+                            <label class="checkbox-label"><input type="checkbox" name="branch" value="E1"><span>EC</span></label>
+                            <label class="checkbox-label"><input type="checkbox" name="branch" value="E2"><span>EE</span></label>
+                            <label class="checkbox-label"><input type="checkbox" name="branch" value="M1"><span>Mechanical</span></label>
+                            <label class="checkbox-label"><input type="checkbox" name="branch" value="V1"><span>Civil</span></label>
+                            <label class="checkbox-label"><input type="checkbox" name="branch" value="S1"><span>Aerospace</span></label>
+                            <label class="checkbox-label"><input type="checkbox" name="branch" value="ALL"><span>All Branches</span></label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">🔍 Find Colleges</button>
+                </form>
+            </div>
+            <div id="resultsSection" class="hidden">
+                <div class="card">
+                    <div class="results-header">
+                        <div class="results-count" id="resultsCount">0 found</div>
+                        <button class="btn btn-small btn-success" onclick="downloadResults()">⬇ Download Excel</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr><th>No</th><th>Code</th><th>College</th><th>Branch</th><th>District</th><th>R1</th><th>R2</th><th>R3</th></tr>
+                            </thead>
+                            <tbody id="resultsTableBody">
+                                <tr><td colspan="8" style="text-align:center;padding:2rem;">Enter preferences</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const BR={'C1':'CS','C2':'CS-AI/ML','C3':'CS-DS','C4':'CS-Cyber','C5':'CS-IoT','A1':'AI/ML','D1':'Data Sci','I1':'Info Sci','E1':'EC','E2':'EE','M1':'Mech','V1':'Civil','S1':'Aero','O1':'Other'};
+        const DI={'B':'Bangalore','M':'Mysore','N':'Mangalore','L':'Belgaum','H':'Hubli','D':'Dharwad','T':'Tumkur','U':'Udupi','V':'Davangere','G':'Gulbarga','A':'Hassan','Y':'Mandya','S':'Shimoga','E':'Bellary','J':'Bijapur','C':'Chitradurga','O':'Other'};
+        let colleges={},data=[],currentUser=null,allResults=[],filteredResults=[],dataLoaded=false,criteria={};
+
+        window.addEventListener('load',async()=>{checkLogin();await loadData();setupRankListener();});
+
+        async function loadData(){
+            const ind=document.getElementById('loadingIndicator');
+            ind.classList.remove('hidden');
+            try{
+                const res=await fetch('data.json');
+                if(!res.ok)throw new Error('Failed');
+                const json=await res.json();
+                colleges=json.c;
+                data=json.d;
+                dataLoaded=true;
+                ind.classList.add('hidden');
+                console.log(`✅ ${data.length} records loaded`);
+            }catch(e){
+                ind.classList.add('hidden');
+                alert('Failed to load data. Please refresh.');
+            }
+        }
+
+        function calcRange(rank){
+            let l,u;
+            if(rank<10000){l=Math.max(0,rank-5000);u=rank+5000;}
+            else if(rank<50000){l=Math.max(0,rank-8500);u=rank+8500;}
+            else if(rank<100000){l=Math.max(0,rank-12500);u=rank+12500;}
+            else if(rank<200000){l=Math.max(0,rank-25000);u=rank+25000;}
+            else{l=Math.max(0,rank-45000);u=rank+45000;}
+            return{lower:l,upper:u};
+        }
+
+        function setupRankListener(){
+            document.getElementById('studentRank').addEventListener('input',(e)=>{
+                const rank=parseInt(e.target.value);
+                const info=document.getElementById('rankInfo');
+                if(rank&&!isNaN(rank)){
+                    const r=calcRange(rank);
+                    info.textContent=`✨ Smart Range: ${r.lower.toLocaleString()} - ${r.upper.toLocaleString()}`;
+                    info.classList.remove('hidden');
+                }else{info.classList.add('hidden');}
+            });
+        }
+
+        function switchTab(tab){
+            const tabs=document.querySelectorAll('.tab');
+            tabs.forEach(t=>t.classList.remove('active'));
+            if(tab==='login'){
+                document.getElementById('loginForm').classList.remove('hidden');
+                document.getElementById('signupForm').classList.add('hidden');
+                tabs[0].classList.add('active');
+            }else{
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('signupForm').classList.remove('hidden');
+                tabs[1].classList.add('active');
+            }
+            hideError();hideSuccess();
+        }
+
+        document.getElementById('loginForm').addEventListener('submit',(e)=>{
+            e.preventDefault();
+            const email=document.getElementById('loginEmail').value;
+            const password=document.getElementById('loginPassword').value;
+            try{
+                const key=`user_${email}`;
+                const userData=localStorage.getItem(key);
+                if(!userData){showError('Account not found');return;}
+                const user=JSON.parse(userData);
+                if(user.password!==password){showError('Wrong password');return;}
+                currentUser=user;
+                localStorage.setItem('currentUser',JSON.stringify(user));
+                showDashboard();
+            }catch(e){showError('Login failed');}
+        });
+
+        document.getElementById('signupForm').addEventListener('submit',(e)=>{
+            e.preventDefault();
+            const email=document.getElementById('signupEmail').value;
+            const password=document.getElementById('signupPassword').value;
+            const name=document.getElementById('signupName').value;
+            try{
+                const key=`user_${email}`;
+                if(localStorage.getItem(key)){showError('Account exists');return;}
+                const userData={email,password,name,createdAt:new Date().toISOString()};
+                localStorage.setItem(key,JSON.stringify(userData));
+                currentUser=userData;
+                localStorage.setItem('currentUser',JSON.stringify(userData));
+                showSuccess('Account created!');
+                setTimeout(()=>showDashboard(),1000);
+            }catch(e){showError('Signup failed');}
+        });
+
+        document.getElementById('preferencesForm').addEventListener('submit',(e)=>{
+            e.preventDefault();
+            if(!dataLoaded){alert('Data still loading...');return;}
+            findColleges();
+        });
+
+        function findColleges(){
+            const rank=parseInt(document.getElementById('studentRank').value);
+            const category=document.getElementById('category').value;
+            const res=Array.from(document.querySelectorAll('input[name="reservation"]:checked')).map(cb=>cb.value);
+            const dists=Array.from(document.querySelectorAll('input[name="district"]:checked')).map(cb=>cb.value);
+            const brs=Array.from(document.querySelectorAll('input[name="branch"]:checked')).map(cb=>cb.value);
+            if(!rank||!category){alert('Enter rank and category');return;}
+            const rng=calcRange(rank);
+            const useHK=res.includes('H');
+            const hasK=res.includes('K');
+            const hasR=res.includes('R');
+            criteria={rank,category,reservations:res.join(', '),districts:dists.map(d=>DI[d]||d).join(', '),branches:brs.map(b=>BR[b]||b).join(', '),rankRange:`${rng.lower.toLocaleString()}-${rng.upper.toLocaleString()}`,date:new Date().toLocaleString()};
+            
+            let results=data.filter(row=>{
+                if(row.t!==category)return false;
+                if((row.h===1)!==useHK)return false;
+                const coll=colleges[Object.keys(colleges).find(k=>colleges[k].i===row.i)];
+                if(!coll)return false;
+                const allD=dists.includes('ALL');
+                if(!allD&&dists.length>0&&!dists.includes(coll.d))return false;
+                const allB=brs.includes('ALL');
+                if(!allB&&brs.length>0&&!brs.includes(row.b))return false;
+                return row.r.some(r=>r&&r>=rng.lower&&r<=rng.upper);
+            });
+
+            results.sort((a,b)=>{
+                const getMin=row=>Math.min(...row.r.filter(r=>r));
+                return getMin(a)-getMin(b);
+            });
+
+            allResults=results;
+            filteredResults=results;
+            displayResults(results);
+        }
+
+        function displayResults(results){
+            const tbody=document.getElementById('resultsTableBody');
+            const sec=document.getElementById('resultsSection');
+            const cnt=document.getElementById('resultsCount');
+            sec.classList.remove('hidden');
+            cnt.textContent=`${results.length} college${results.length!==1?'s':''} found`;
+            if(results.length===0){
+                tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:2rem;">No matches found. Try different criteria.</td></tr>';
+                return;
+            }
+            tbody.innerHTML=results.map((row,idx)=>{
+                const coll=colleges[Object.keys(colleges).find(k=>colleges[k].i===row.i)];
+                const code=Object.keys(colleges).find(k=>colleges[k].i===row.i);
+                const ranks=row.r;
+                return`<tr><td>${idx+1}</td><td class="college-code">${code}</td><td title="${coll.n}">${coll.n}</td><td>${BR[row.b]||row.b}</td><td>${DI[coll.d]||coll.d}</td><td class="cutoff-rank">${ranks[0]||'-'}</td><td class="cutoff-rank">${ranks[1]||'-'}</td><td class="cutoff-rank">${ranks[2]||'-'}</td></tr>`;
+            }).join('');
+        }
+
+        function downloadResults(){
+            if(filteredResults.length===0){alert('No results');return;}
+            const headers=[
+                '═══════════════════════════════════════════════════════════════',
+                'ANTICLOCK COACHING ACADEMY',
+                'Contact: 6362324224',
+                'UGCET 2025 College Counselling Results',
+                '═══════════════════════════════════════════════════════════════',
+                '',
+                `Name: ${currentUser.name}`,
+                `Email: ${currentUser.email}`,
+                `Rank: ${criteria.rank}`,
+                `Category: ${criteria.category}`,
+                '',
+                '───────────────────────────────────────────────────────────────',
+                'Results (Sorted by Cutoff Rank)',
+                '───────────────────────────────────────────────────────────────',
+                '',
+                'S.No,Code,College,Branch,District,R1,R2,R3'
+            ];
+            const rows=filteredResults.map((row,idx)=>{
+                const coll=colleges[Object.keys(colleges).find(k=>colleges[k].i===row.i)];
+                const code=Object.keys(colleges).find(k=>colleges[k].i===row.i);
+                const esc=s=>{if(!s)return'';s=String(s);if(s.includes(',')||s.includes('"'))return`"${s.replace(/"/g,'""')}"`;return s;};
+                return[idx+1,esc(code),esc(coll.n),esc(BR[row.b]||row.b),esc(DI[coll.d]||coll.d),row.r[0]||'-',row.r[1]||'-',row.r[2]||'-'].join(',');
+            });
+            const footer=[
+                '',
+                '═══════════════════════════════════════════════════════════════',
+                `Total: ${filteredResults.length} colleges`,
+                `Date: ${new Date().toLocaleString()}`,
+                '',
+                'ANTICLOCK COACHING ACADEMY',
+                'Contact: 6362324224',
+                '═══════════════════════════════════════════════════════════════'
+            ];
+            const csv=[...headers,...rows,...footer].join('\n');
+            const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+            const link=document.createElement('a');
+            link.href=URL.createObjectURL(blob);
+            link.download=`ANTICLOCK_UGCET_${currentUser.name.replace(/\s+/g,'_')}_${new Date().toISOString().split('T')[0]}.csv`;
+            link.style.visibility='hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function checkLogin(){
+            const stored=localStorage.getItem('currentUser');
+            if(stored){currentUser=JSON.parse(stored);showDashboard();}
+        }
+
+        function showDashboard(){
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('userName').textContent=currentUser.name;
+            document.getElementById('userEmail').textContent=currentUser.email;
+        }
+
+        function logout(){
+            currentUser=null;
+            localStorage.removeItem('currentUser');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('resultsSection').classList.add('hidden');
+            document.getElementById('loginForm').reset();
+            document.getElementById('signupForm').reset();
+            document.getElementById('preferencesForm').reset();
+        }
+
+        function showError(msg){
+            const err=document.getElementById('errorMessage');
+            err.textContent=msg;
+            err.classList.remove('hidden');
+            setTimeout(()=>err.classList.add('hidden'),5000);
+        }
+
+        function hideError(){document.getElementById('errorMessage').classList.add('hidden');}
+
+        function showSuccess(msg){
+            const suc=document.getElementById('successMessage');
+            suc.textContent=msg;
+            suc.classList.remove('hidden');
+            setTimeout(()=>suc.classList.add('hidden'),3000);
+        }
+
+        function hideSuccess(){document.getElementById('successMessage').classList.add('hidden');}
+    </script>
+</body>
+</html>

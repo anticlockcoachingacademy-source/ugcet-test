@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UGCET 2025 - ANTICLOCK Counselling</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--pri:#1e40af;--acc:#3b82f6;--grn:#10b981;--bg:#f8fafc;--wh:#fff;--txt:#0f172a;--muted:#64748b;--bdr:#e2e8f0}
+body{font-family:Arial,sans-serif;background:var(--bg);color:var(--txt)}
+.header{background:linear-gradient(135deg,#1e40af,#1e3a8a);color:#fff;padding:20px;text-align:center}
+.header h1{font-size:1.6rem;font-weight:800}
+.header p{font-size:0.85rem;opacity:.9;margin-top:4px}
+.container{padding:16px;max-width:100%}
+.card{background:var(--wh);border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.card h2{font-size:1.1rem;font-weight:700;margin-bottom:14px}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:16px}
+.tab{padding:10px;border:2px solid var(--bdr);background:var(--bg);border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:600;text-align:center;color:var(--muted)}
+.tab.active{background:var(--pri);border-color:var(--pri);color:#fff}
+.fg{margin-bottom:12px}
+.fg label{display:block;margin-bottom:5px;font-weight:600;font-size:.85rem}
+input,select{width:100%;padding:11px;border:2px solid var(--bdr);border-radius:8px;font-size:.95rem;background:var(--wh)}
+input:focus,select:focus{outline:none;border-color:var(--acc)}
+.cb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px;margin-top:6px}
+.cb{display:flex;align-items:center;gap:6px;padding:8px;background:var(--bg);border:2px solid var(--bdr);border-radius:6px;cursor:pointer;font-size:.8rem}
+.cb input{width:16px;height:16px;margin:0}
+.cb.checked{background:#eff6ff;border-color:var(--acc)}
+.btn{width:100%;padding:13px;border:none;background:var(--pri);color:#fff;font-size:1rem;font-weight:700;border-radius:8px;cursor:pointer}
+.btn-sm{padding:8px 14px;width:auto;font-size:.85rem;border-radius:6px}
+.btn-grn{background:var(--grn)}
+.info{background:#e0f2fe;border:1px solid #38bdf8;color:#0c4a6e;padding:8px 12px;border-radius:6px;margin-top:6px;font-size:.82rem}
+.rh{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.rc{font-weight:600;color:var(--muted);font-size:.95rem}
+.tbl-wrap{overflow-x:auto;border-radius:8px;border:1px solid var(--bdr)}
+table{width:100%;border-collapse:collapse;font-size:.8rem}
+th{padding:9px 7px;background:var(--bg);font-weight:700;text-align:left;border-bottom:2px solid var(--bdr);font-size:.72rem;text-transform:uppercase;white-space:nowrap}
+td{padding:9px 7px;border-bottom:1px solid var(--bdr);vertical-align:top}
+.code{font-weight:700;color:var(--pri)}
+.rank{font-weight:700;color:var(--grn)}
+.hidden{display:none}
+.err{background:#fee2e2;border:1px solid #fca5a5;color:#991b1b;padding:10px;border-radius:8px;margin-bottom:12px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🎓 UGCET 2025</h1>
+  <p>ANTICLOCK COACHING ACADEMY | 6362324224</p>
+</div>
+
+<div class="container">
+
+<!-- Login Card -->
+<div id="loginCard" class="card">
+  <h2>👤 Student Login</h2>
+  <div id="loginErr" class="err hidden"></div>
+  <div class="fg"><label>Name *</label><input id="stuName" placeholder="Your full name"></div>
+  <div class="fg"><label>Email *</label><input id="stuEmail" type="email" placeholder="your@email.com"></div>
+  <div class="fg"><label>Rank *</label><input id="stuRank" type="number" placeholder="Your UGCET rank"></div>
+  <div class="fg"><label>Category *</label>
+    <select id="stuCat">
+      <option value="">Select Category</option>
+      <option value="GM">GM - General Merit</option>
+      <option value="1G">1G - Category 1</option>
+      <option value="2AG">2AG - Category 2A</option>
+      <option value="2BG">2BG - Category 2B</option>
+      <option value="3AG">3AG - Category 3A</option>
+      <option value="3BG">3BG - Category 3B</option>
+      <option value="SCG">SCG - Scheduled Caste</option>
+      <option value="STG">STG - Scheduled Tribe</option>
+    </select>
+  </div>
+  <button class="btn" onclick="doLogin()">Start Counselling →</button>
+</div>
+
+<!-- Main Dashboard -->
+<div id="dashboard" class="hidden">
+
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;background:#fff;padding:12px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.08)">
+    <div>
+      <div style="font-weight:700" id="dispName"></div>
+      <div style="font-size:.8rem;color:#64748b" id="dispInfo"></div>
+    </div>
+    <button class="btn btn-sm" style="background:#e2e8f0;color:#0f172a" onclick="doLogout()">Logout</button>
+  </div>
+
+  <div class="card">
+    <h2>🔍 Search Colleges</h2>
+
+    <!-- Round Tabs -->
+    <div class="tabs">
+      <div class="tab active" id="tab1" onclick="setRound(1)">Round 1</div>
+      <div class="tab" id="tab2" onclick="setRound(2)">Round 2</div>
+      <div class="tab" id="tab3" onclick="setRound(3)">Round 3</div>
+    </div>
+
+    <!-- Reservation -->
+    <div class="fg">
+      <label>Reservation</label>
+      <div class="cb-grid" style="grid-template-columns:repeat(2,1fr)">
+        <label class="cb"><input type="checkbox" id="resK"> Kannada (K)</label>
+        <label class="cb"><input type="checkbox" id="resR"> Rural (R)</label>
+      </div>
+    </div>
+
+    <!-- Districts -->
+    <div class="fg">
+      <label>Districts <span style="color:#64748b;font-weight:400">(leave blank = all)</span></label>
+      <div class="cb-grid">
+        <label class="cb"><input type="checkbox" name="dist" value="BLR"> Bangalore</label>
+        <label class="cb"><input type="checkbox" name="dist" value="MYS"> Mysuru</label>
+        <label class="cb"><input type="checkbox" name="dist" value="MNG"> Dakshina Kannada</label>
+        <label class="cb"><input type="checkbox" name="dist" value="BLM"> Belagavi</label>
+        <label class="cb"><input type="checkbox" name="dist" value="HBL"> Hubli</label>
+        <label class="cb"><input type="checkbox" name="dist" value="DWD"> Dharwad</label>
+        <label class="cb"><input type="checkbox" name="dist" value="TMK"> Tumakuru</label>
+        <label class="cb"><input type="checkbox" name="dist" value="GLB"> Kalaburagi</label>
+        <label class="cb"><input type="checkbox" name="dist" value="BJP"> Vijayapura</label>
+        <label class="cb"><input type="checkbox" name="dist" value="BLY"> Ballari</label>
+        <label class="cb"><input type="checkbox" name="dist" value="UDP"> Udupi</label>
+        <label class="cb"><input type="checkbox" name="dist" value="DVG"> Davanagere</label>
+        <label class="cb"><input type="checkbox" name="dist" value="SHM"> Shivamogga</label>
+        <label class="cb"><input type="checkbox" name="dist" value="HSN"> Hassan</label>
+        <label class="cb"><input type="checkbox" name="dist" value="MDY"> Mandya</label>
+        <label class="cb"><input type="checkbox" name="dist" value="CTD"> Chitradurga</label>
+        <label class="cb"><input type="checkbox" name="dist" value="CMG"> Chikkamagaluru</label>
+        <label class="cb"><input type="checkbox" name="dist" value="RCH"> Raichur</label>
+        <label class="cb"><input type="checkbox" name="dist" value="BDR"> Bidar</label>
+        <label class="cb"><input type="checkbox" name="dist" value="BGK"> Bagalkot</label>
+        <label class="cb"><input type="checkbox" name="dist" value="GDG"> Gadag</label>
+        <label class="cb"><input type="checkbox" name="dist" value="HVR"> Haveri</label>
+        <label class="cb"><input type="checkbox" name="dist" value="KPL"> Koppal</label>
+        <label class="cb"><input type="checkbox" name="dist" value="RMG"> Ramanagara</label>
+        <label class="cb"><input type="checkbox" name="dist" value="CBP"> Chikballapur</label>
+        <label class="cb"><input type="checkbox" name="dist" value="CMR"> Chamarajanagar</label>
+        <label class="cb"><input type="checkbox" name="dist" value="KDG"> Kodagu</label>
+        <label class="cb"><input type="checkbox" name="dist" value="KLR"> Kolar</label>
+        <label class="cb"><input type="checkbox" name="dist" value="UKN"> Uttara Kannada</label>
+        <label class="cb"><input type="checkbox" name="dist" value="VJN"> Vijayanagara</label>
+        <label class="cb"><input type="checkbox" name="dist" value="YDG"> Yadgir</label>
+      </div>
+    </div>
+
+    <!-- Branches -->
+    <div class="fg">
+      <label>Branches <span style="color:#64748b;font-weight:400">(leave blank = all)</span></label>
+      <div class="cb-grid">
+        <label class="cb"><input type="checkbox" name="br" value="CS"> CS (Pure)</label>
+        <label class="cb"><input type="checkbox" name="br" value="AI_CS"> CS - AI/ML</label>
+        <label class="cb"><input type="checkbox" name="br" value="DS_CS"> CS - Data Science</label>
+        <label class="cb"><input type="checkbox" name="br" value="CY_CS"> CS - Cyber Security</label>
+        <label class="cb"><input type="checkbox" name="br" value="IO_CS"> CS - IoT</label>
+        <label class="cb"><input type="checkbox" name="br" value="AI"> AI/ML</label>
+        <label class="cb"><input type="checkbox" name="br" value="AD"> AI & Data Science</label>
+        <label class="cb"><input type="checkbox" name="br" value="DS"> Data Science</label>
+        <label class="cb"><input type="checkbox" name="br" value="IS"> Information Science</label>
+        <label class="cb"><input type="checkbox" name="br" value="IT"> Information Technology</label>
+        <label class="cb"><input type="checkbox" name="br" value="EC"> Electronics & Comm</label>
+        <label class="cb"><input type="checkbox" name="br" value="EE"> Electrical</label>
+        <label class="cb"><input type="checkbox" name="br" value="ME"> Mechanical</label>
+        <label class="cb"><input type="checkbox" name="br" value="CE"> Civil</label>
+        <label class="cb"><input type="checkbox" name="br" value="AE"> Aerospace</label>
+        <label class="cb"><input type="checkbox" name="br" value="AU"> Automobile</label>
+        <label class="cb"><input type="checkbox" name="br" value="CH"> Chemical</label>
+        <label class="cb"><input type="checkbox" name="br" value="BT"> Biotech</label>
+        <label class="cb"><input type="checkbox" name="br" value="VLSI"> VLSI</label>
+        <label class="cb"><input type="checkbox" name="br" value="MT"> Mechatronics</label>
+        <label class="cb"><input type="checkbox" name="br" value="RO"> Robotics</label>
+      </div>
+    </div>
+
+    <div id="rankPreview" class="info hidden"></div>
+    <button class="btn" onclick="doSearch()">🔍 Find Colleges</button>
+  </div>
+
+  <!-- Results -->
+  <div id="resultsCard" class="card hidden">
+    <div class="rh">
+      <div class="rc" id="resCount"></div>
+      <button class="btn btn-sm btn-grn" onclick="doDownload()">⬇ Download Excel</button>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Code</th><th>College</th><th>Branch</th><th>District</th><th>Cutoff</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /dashboard -->
+</div><!-- /container -->
+
+<script>
+const BR={CS:'CS (Pure)',AI_CS:'CS-AI/ML',DS_CS:'CS-Data Sci',CY_CS:'CS-Cyber',IO_CS:'CS-IoT',BC_CS:'CS-Blockchain',NW_CS:'CS-Networks',SY_CS:'CS-Systems',AI:'AI/ML',AD:'AI & DS',DS:'Data Science',IS:'Info Science',IT:'Info Tech',EC:'Electronics & Comm',EL:'Electronics',EE:'Electrical',ES:'Elec & Computer',ET:'Elec & Telecom',EI:'Elec & Instrumentation',VLSI:'VLSI',ME:'Mechanical',CE:'Civil',CH:'Chemical',BT:'Biotech',AE:'Aerospace',AU:'Automobile',MT:'Mechatronics',RO:'Robotics',BM:'Biomedical',OT:'Other'};
+const DI={BLR:'Bangalore',MYS:'Mysuru',MNG:'Dakshina Kannada',BLM:'Belagavi',HBL:'Hubli-Dharwad',DWD:'Dharwad',TMK:'Tumakuru',GLB:'Kalaburagi',BJP:'Vijayapura',BLY:'Ballari',UDP:'Udupi',DVG:'Davanagere',SHM:'Shivamogga',HSN:'Hassan',MDY:'Mandya',CTD:'Chitradurga',CMG:'Chikkamagaluru',RCH:'Raichur',BDR:'Bidar',BGK:'Bagalkot',GDG:'Gadag',HVR:'Haveri',KPL:'Koppal',RMG:'Ramanagara',CBP:'Chikballapur',CMR:'Chamarajanagar',KDG:'Kodagu',KLR:'Kolar',UKN:'Uttara Kannada',VJN:'Vijayanagara',YDG:'Yadgir',OTH:'Other'};
+
+let currentRound=1, roundData={}, colleges={}, currentData=[], student={}, results=[];
+let dataLoaded={1:false,2:false,3:false};
+
+async function loadRound(r){
+  if(dataLoaded[r])return;
+  try{
+    const res=await fetch(`data_r${r}.json`);
+    const json=await res.json();
+    roundData[r]={colleges:json.c,data:json.d};
+    dataLoaded[r]=true;
+    console.log(`✅ Round ${r}: ${json.d.length} records`);
+  }catch(e){
+    alert(`Failed to load Round ${r} data`);
+  }
+}
+
+function doLogin(){
+  const name=document.getElementById('stuName').value.trim();
+  const email=document.getElementById('stuEmail').value.trim();
+  const rank=parseInt(document.getElementById('stuRank').value);
+  const cat=document.getElementById('stuCat').value;
+  const err=document.getElementById('loginErr');
+
+  if(!name){err.textContent='Please enter your name';err.classList.remove('hidden');return;}
+  if(!email){err.textContent='Please enter your email';err.classList.remove('hidden');return;}
+  if(!rank||isNaN(rank)){err.textContent='Please enter your rank';err.classList.remove('hidden');return;}
+  if(!cat){err.textContent='Please select your category';err.classList.remove('hidden');return;}
+
+  student={name,email,rank,cat};
+  localStorage.setItem('ugcet_student',JSON.stringify(student));
+
+  document.getElementById('loginCard').classList.add('hidden');
+  document.getElementById('dashboard').classList.remove('hidden');
+  document.getElementById('dispName').textContent=name;
+  document.getElementById('dispInfo').textContent=`Rank: ${rank.toLocaleString()} | Category: ${cat}`;
+
+  loadRound(1);
+  showRankPreview(rank);
+}
+
+function doLogout(){
+  localStorage.removeItem('ugcet_student');
+  document.getElementById('loginCard').classList.remove('hidden');
+  document.getElementById('dashboard').classList.add('hidden');
+  document.getElementById('resultsCard').classList.add('hidden');
+}
+
+function calcRange(rank){
+  if(rank<10000)return{lo:Math.max(0,rank-5000),hi:rank+5000};
+  if(rank<50000)return{lo:Math.max(0,rank-8500),hi:rank+8500};
+  if(rank<100000)return{lo:Math.max(0,rank-12500),hi:rank+12500};
+  if(rank<200000)return{lo:Math.max(0,rank-25000),hi:rank+25000};
+  return{lo:Math.max(0,rank-45000),hi:rank+45000};
+}
+
+function showRankPreview(rank){
+  const r=calcRange(rank);
+  const el=document.getElementById('rankPreview');
+  el.textContent=`✨ Your rank: ${rank.toLocaleString()} | Search range: ${r.lo.toLocaleString()} - ${r.hi.toLocaleString()}`;
+  el.classList.remove('hidden');
+}
+
+function setRound(r){
+  currentRound=r;
+  [1,2,3].forEach(n=>{
+    document.getElementById(`tab${n}`).classList.toggle('active',n===r);
+  });
+  loadRound(r);
+  document.getElementById('resultsCard').classList.add('hidden');
+}
+
+async function doSearch(){
+  if(!dataLoaded[currentRound]){
+    await loadRound(currentRound);
+  }
+
+  const hasK=document.getElementById('resK').checked;
+  const hasR=document.getElementById('resR').checked;
+  const dists=Array.from(document.querySelectorAll('input[name="dist"]:checked')).map(x=>x.value);
+  const brs=Array.from(document.querySelectorAll('input[name="br"]:checked')).map(x=>x.value);
+
+  const rank=student.rank;
+  const cat=student.cat;
+  const rng=calcRange(rank);
+
+  const rd=roundData[currentRound];
+  colleges=rd.colleges;
+
+  results=rd.data.filter(row=>{
+    if(row.t!==cat)return false;
+
+    const coll=colleges[Object.keys(colleges).find(k=>colleges[k].i===row.i)];
+    if(!coll)return false;
+
+    if(dists.length>0&&!dists.includes(coll.d))return false;
+    if(brs.length>0&&!brs.includes(row.b))return false;
+
+    // r = [base, kannada, rural]
+    let cutoff=row.r[0];
+    if(hasK&&row.r.length>=2)cutoff=row.r[1];
+    else if(hasR&&row.r.length>=3)cutoff=row.r[2];
+
+    return cutoff!=null&&cutoff>=rng.lo&&cutoff<=rng.hi;
+  });
+
+  results.sort((a,b)=>{
+    const getCutoff=r=>{
+      if(hasK&&r.r.length>=2)return r.r[1];
+      if(hasR&&r.r.length>=3)return r.r[2];
+      return r.r[0];
+    };
+    return getCutoff(a)-getCutoff(b);
+  });
+
+  renderResults(hasK,hasR);
+}
+
+function renderResults(hasK,hasR){
+  const card=document.getElementById('resultsCard');
+  const cnt=document.getElementById('resCount');
+  const tbody=document.getElementById('tbody');
+
+  card.classList.remove('hidden');
+  cnt.textContent=`${results.length} college${results.length!==1?'s':''} found (Round ${currentRound})`;
+
+  if(results.length===0){
+    tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:#64748b">No colleges found. Try wider criteria.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML=results.map((row,idx)=>{
+    const code=Object.keys(colleges).find(k=>colleges[k].i===row.i);
+    const coll=colleges[code];
+    let cutoff=row.r[0];
+    if(hasK&&row.r.length>=2)cutoff=row.r[1];
+    else if(hasR&&row.r.length>=3)cutoff=row.r[2];
+    const name=coll.n.length>45?coll.n.substr(0,45)+'...':coll.n;
+    return`<tr><td>${idx+1}</td><td class="code">${code}</td><td title="${coll.n}">${name}</td><td>${BR[row.b]||row.b}</td><td>${DI[coll.d]||coll.d}</td><td class="rank">${cutoff||'-'}</td></tr>`;
+  }).join('');
+}
+
+function doDownload(){
+  if(!results.length){alert('No results to download');return;}
+
+  const hasK=document.getElementById('resK').checked;
+  const hasR=document.getElementById('resR').checked;
+  const res_label=hasK?'Kannada (K)':hasR?'Rural (R)':'None';
+
+  let csv='';
+  csv+='╔═══════════════════════════════════════════════════════════════╗\n';
+  csv+='║          ANTICLOCK COACHING ACADEMY                          ║\n';
+  csv+='║          Contact: 6362324224                                 ║\n';
+  csv+='║          UGCET 2025 College Counselling Results              ║\n';
+  csv+='╚═══════════════════════════════════════════════════════════════╝\n';
+  csv+='\n';
+  csv+=`Name          : ${student.name}\n`;
+  csv+=`Email Address : ${student.email}\n`;
+  csv+=`Rank          : ${student.rank}\n`;
+  csv+=`Category      : ${student.cat}\n`;
+  csv+=`Round         : Round ${currentRound}\n`;
+  csv+=`Reservation   : ${res_label}\n`;
+  csv+=`Generated On  : ${new Date().toLocaleString()}\n`;
+  csv+='\n';
+  csv+='────────────────────────────────────────────────────────────────\n';
+  csv+='COLLEGE RESULTS\n';
+  csv+='────────────────────────────────────────────────────────────────\n';
+  csv+='\n';
+  csv+='S.No,College Code,College Name,Branch,District,Cutoff Rank\n';
+
+  results.forEach((row,idx)=>{
+    const code=Object.keys(colleges).find(k=>colleges[k].i===row.i);
+    const coll=colleges[code];
+    let cutoff=row.r[0];
+    if(hasK&&row.r.length>=2)cutoff=row.r[1];
+    else if(hasR&&row.r.length>=3)cutoff=row.r[2];
+    const esc=s=>{s=String(s||'');return s.includes(',')||s.includes('"')?`"${s.replace(/"/g,'""')}"`:`${s}`;};
+    csv+=`${idx+1},${esc(code)},${esc(coll.n)},${esc(BR[row.b]||row.b)},${esc(DI[coll.d]||coll.d)},${cutoff||'-'}\n`;
+  });
+
+  csv+='\n';
+  csv+='────────────────────────────────────────────────────────────────\n';
+  csv+=`Total Colleges Found : ${results.length}\n`;
+  csv+='\n';
+  csv+='╔═══════════════════════════════════════════════════════════════╗\n';
+  csv+='║          ANTICLOCK COACHING ACADEMY                          ║\n';
+  csv+='║          Contact: 6362324224                                 ║\n';
+  csv+='║          Your Partner in UGCET Success!                      ║\n';
+  csv+='╚═══════════════════════════════════════════════════════════════╝\n';
+
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`ANTICLOCK_UGCET_R${currentRound}_${student.name.replace(/\s+/g,'_')}_${student.rank}.csv`;
+  a.click();
+}
+
+// Check if already logged in
+window.onload=()=>{
+  const saved=localStorage.getItem('ugcet_student');
+  if(saved){
+    student=JSON.parse(saved);
+    document.getElementById('loginCard').classList.add('hidden');
+    document.getElementById('dashboard').classList.remove('hidden');
+    document.getElementById('dispName').textContent=student.name;
+    document.getElementById('dispInfo').textContent=`Rank: ${student.rank.toLocaleString()} | Category: ${student.cat}`;
+    loadRound(1);
+    showRankPreview(student.rank);
+  }
+};
+</script>
+</body>
+</html>
